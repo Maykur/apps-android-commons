@@ -189,6 +189,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return true;
         });
 
+        Preference customPickerPreference = findPreference("useCustomPickerPref");
+        customPickerPreference.setOnPreferenceChangeListener(
+            (preference, newValue) -> {
+                boolean isGetContentPickerTurnedOn = !(boolean) newValue;
+                if (isGetContentPickerTurnedOn) {
+                    //so keep default of customPicker;
+                }
+                return true;
+            }
+        );
+
         Preference documentBasedPickerPreference = findPreference("openDocumentPhotoPickerPref");
         documentBasedPickerPreference.setOnPreferenceChangeListener(
             (preference, newValue) -> {
@@ -199,6 +210,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 return true;
             }
         );
+
         // Disable some settings when not logged in.
         if (defaultKvStore.getBoolean("login_skipped", false)) {
             findPreference("useExternalStorage").setEnabled(false);
@@ -209,6 +221,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             findPreference(CampaignView.CAMPAIGNS_DEFAULT_PREFERENCE).setEnabled(false);
             findPreference("managed_exif_tags").setEnabled(false);
             findPreference("openDocumentPhotoPickerPref").setEnabled(false);
+            findPreference("useCustomPickerPref").setEnabled(false);
             findPreference("inAppCameraLocationPref").setEnabled(false);
         }
     }

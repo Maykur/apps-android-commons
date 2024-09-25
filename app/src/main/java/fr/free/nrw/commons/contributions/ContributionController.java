@@ -233,6 +233,10 @@ public class ContributionController {
         FilePicker.openGallery(activity, 0, openDocumentIntentPreferred);
     }
 
+    public boolean info(){
+        return defaultKvStore.getBoolean("useCustomPickerPref", true);
+    }
+
     /**
      * Sets configuration for file picker
      */

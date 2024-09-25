@@ -20,10 +20,11 @@
       android:title="@string/preference_category_general">
 
         <Preference
+          android:layout_width="wrap_content"
           android:key="appUiDefaultLanguagePref"
-          app:useSimpleSummaryProvider="true"
+          android:title="@string/app_ui_language"
           app:singleLineTitle="false"
-          android:title="@string/app_ui_language" />
+          app:useSimpleSummaryProvider="true" />
 
         <Preference
           android:key="descriptionDefaultLanguagePref"
@@ -70,10 +71,16 @@
           android:summary="@string/in_app_camera_location_switch_pref_summary"/>
 
         <SwitchPreference
-          android:defaultValue="true"
+          android:key="useCustomPickerPref"
+          android:summary="@string/use_custom_picker_explanation"
+          android:title="@string/use_custom_picker_title"
+          app:defaultValue="true" />
+
+        <SwitchPreference
           android:key="openDocumentPhotoPickerPref"
           android:summary="@string/open_document_photo_picker_explanation"
-          android:title="@string/open_document_photo_picker_title"/>
+          android:title="@string/open_document_photo_picker_title"
+          app:defaultValue="true" />
 
         <SwitchPreference
           android:key="useAuthorName"

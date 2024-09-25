@@ -69,6 +69,7 @@ import fr.free.nrw.commons.R;
 import fr.free.nrw.commons.Utils;
 import fr.free.nrw.commons.bookmarks.locations.BookmarkLocationsDao;
 import fr.free.nrw.commons.contributions.ContributionController;
+import fr.free.nrw.commons.contributions.ContributionsListFragment;
 import fr.free.nrw.commons.contributions.MainActivity;
 import fr.free.nrw.commons.contributions.MainActivity.ActiveFragment;
 import fr.free.nrw.commons.databinding.FragmentNearbyParentBinding;
@@ -1627,12 +1628,16 @@ public class NearbyParentFragment extends CommonsDaggerSupportFragment
         NearbyFABUtils.addAnchorToBigFABs(binding.fabPlus,
             binding.bottomSheetDetails.getRoot().getId());
         binding.fabPlus.show();
-        NearbyFABUtils.addAnchorToSmallFABs(binding.fabGallery,
-            getView().findViewById(R.id.empty_view).getId());
+        if(!controller.info()) {
+            NearbyFABUtils.addAnchorToSmallFABs(binding.fabGallery,
+                getView().findViewById(R.id.empty_view).getId());
+        }
         NearbyFABUtils.addAnchorToSmallFABs(binding.fabCamera,
             getView().findViewById(R.id.empty_view1).getId());
-        NearbyFABUtils.addAnchorToSmallFABs(binding.fabCustomGallery,
-            getView().findViewById(R.id.empty_view2).getId());
+        if(controller.info()) {
+            NearbyFABUtils.addAnchorToSmallFABs(binding.fabCustomGallery,
+                getView().findViewById(R.id.empty_view2).getId());
+        }
     }
 
     /**
@@ -1645,11 +1650,20 @@ public class NearbyParentFragment extends CommonsDaggerSupportFragment
             showFABs();
             binding.fabPlus.startAnimation(rotate_forward);
             binding.fabCamera.startAnimation(fab_open);
-            binding.fabGallery.startAnimation(fab_open);
-            binding.fabCustomGallery.startAnimation(fab_open);
-            binding.fabCustomGallery.show();
             binding.fabCamera.show();
-            binding.fabGallery.show();
+            if (controller.info()) {
+                binding.fabCustomGallery.startAnimation(fab_open);
+                binding.fabGallery.hide();
+                binding.fabGallery.setVisibility(View.INVISIBLE);
+                binding.fabCustomGallery.setVisibility(View.VISIBLE);
+                binding.fabCustomGallery.show();
+            } else {
+                binding.fabGallery.startAnimation(fab_open);
+                binding.fabCustomGallery.hide();
+                binding.fabCustomGallery.setVisibility(View.INVISIBLE);
+                binding.fabGallery.setVisibility(View.VISIBLE);
+                binding.fabGallery.show();
+            }
             this.isFABsExpanded = true;
         }
     }
@@ -1677,8 +1691,11 @@ public class NearbyParentFragment extends CommonsDaggerSupportFragment
         if (isFABsExpanded) {
             binding.fabPlus.startAnimation(rotate_backward);
             binding.fabCamera.startAnimation(fab_close);
-            binding.fabGallery.startAnimation(fab_close);
-            binding.fabCustomGallery.startAnimation(fab_close);
+            if(!controller.info()) {
+                binding.fabGallery.startAnimation(fab_close);
+            }else {
+                binding.fabCustomGallery.startAnimation(fab_close);
+            }
             binding.fabCustomGallery.hide();
             binding.fabCamera.hide();
             binding.fabGallery.hide();
@@ -2185,7 +2202,7 @@ public class NearbyParentFragment extends CommonsDaggerSupportFragment
         });
 
         binding.fabGallery.setOnClickListener(view -> {
-            if (binding.fabGallery.isShown()) {
+            if (binding.fabGallery.isShown() && !controller.info()) {
                 Timber.d("Gallery button tapped. Place: %s", selectedPlace.toString());
                 storeSharedPrefs(selectedPlace);
                 controller.initiateGalleryPick(getActivity(),
@@ -2194,7 +2211,7 @@ public class NearbyParentFragment extends CommonsDaggerSupportFragment
         });
 
         binding.fabCustomGallery.setOnClickListener(view -> {
-            if (binding.fabCustomGallery.isShown()) {
+            if (binding.fabCustomGallery.isShown() && controller.info()) {
                 Timber.d("Gallery button tapped. Place: %s", selectedPlace.toString());
                 storeSharedPrefs(selectedPlace);
                 controller.initiateCustomGalleryPickWithPermission(getActivity());

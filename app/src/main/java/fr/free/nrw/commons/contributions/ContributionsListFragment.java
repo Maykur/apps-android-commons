@@ -5,11 +5,13 @@ import static android.view.View.VISIBLE;
 import static fr.free.nrw.commons.di.NetworkingModule.NAMED_LANGUAGE_WIKI_PEDIA_WIKI_SITE;
 
 import android.Manifest.permission;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -147,11 +149,13 @@ public class ContributionsListFragment extends CommonsDaggerSupportFragment impl
         rvContributionsList = binding.contributionsList;
 
         contributionsListPresenter.onAttachView(this);
+        /*
         binding.fabCustomGallery.setOnClickListener(v -> launchCustomSelector());
         binding.fabCustomGallery.setOnLongClickListener(view -> {
             ViewUtil.showShortToast(getContext(), R.string.custom_selector_title);
             return true;
         });
+         */
 
         if (Objects.equals(sessionManager.getUserName(), userName)) {
             binding.tvContributionsOfUser.setVisibility(GONE);
@@ -323,20 +327,51 @@ public class ContributionsListFragment extends CommonsDaggerSupportFragment impl
         binding.fabPlus.setOnClickListener(view -> animateFAB(isFabOpen));
         binding.fabCamera.setOnClickListener(view -> {
             controller.initiateCameraPick(getActivity(), inAppCameraLocationPermissionLauncher);
-            animateFAB(isFabOpen);
         });
         binding.fabCamera.setOnLongClickListener(view -> {
             ViewUtil.showShortToast(getContext(), R.string.add_contribution_from_camera);
             return true;
         });
+    }
+
+    /*
+     * Custom Listeners which force the functionality of buttons
+     */
+    private void setGalleryListeners() {
         binding.fabGallery.setOnClickListener(view -> {
             controller.initiateGalleryPick(getActivity(), true);
-            animateFAB(isFabOpen);
         });
         binding.fabGallery.setOnLongClickListener(view -> {
             ViewUtil.showShortToast(getContext(), R.string.menu_from_gallery);
             return true;
         });
+        binding.fabCustomGallery.setOnClickListener(view -> {
+            controller.initiateGalleryPick(getActivity(), true);
+        });
+        binding.fabCustomGallery.setOnLongClickListener(view -> {
+            ViewUtil.showShortToast(getContext(), R.string.menu_from_gallery);
+            return true;
+        });
+        binding.fabGallery.show();
+        binding.fabCustomGallery.hide();
+        binding.fabCustomGallery.setVisibility(GONE);
+    }
+
+    private void setCustomGalleryListeners() {
+        binding.fabCustomGallery.setOnClickListener(view -> launchCustomSelector());
+        binding.fabCustomGallery.setOnLongClickListener(view -> {
+            ViewUtil.showShortToast(getContext(), R.string.custom_selector_title);
+            return true;
+        });
+        binding.fabGallery.setOnClickListener(view -> launchCustomSelector());
+        binding.fabGallery.setOnLongClickListener(view -> {
+            ViewUtil.showShortToast(getContext(), R.string.custom_selector_title);
+            return true;
+        });
+
+        binding.fabGallery.hide();
+        binding.fabCustomGallery.show();
+        binding.fabGallery.setVisibility(GONE);
     }
 
     /**
@@ -354,22 +389,40 @@ public class ContributionsListFragment extends CommonsDaggerSupportFragment impl
     private void animateFAB(final boolean isFabOpen) {
         this.isFabOpen = !isFabOpen;
         if (binding.fabPlus.isShown()) {
-            if (isFabOpen) {
-                binding.fabPlus.startAnimation(rotate_backward);
-                binding.fabCamera.startAnimation(fab_close);
-                binding.fabGallery.startAnimation(fab_close);
-                binding.fabCustomGallery.startAnimation(fab_close);
-                binding.fabCamera.hide();
-                binding.fabGallery.hide();
-                binding.fabCustomGallery.hide();
-            } else {
-                binding.fabPlus.startAnimation(rotate_forward);
-                binding.fabCamera.startAnimation(fab_open);
-                binding.fabGallery.startAnimation(fab_open);
-                binding.fabCustomGallery.startAnimation(fab_open);
-                binding.fabCamera.show();
-                binding.fabGallery.show();
-                binding.fabCustomGallery.show();
+            if(controller.info()) {
+                if (isFabOpen) {
+                    binding.fabPlus.startAnimation(rotate_backward);
+                    binding.fabCamera.startAnimation(fab_close);
+                    binding.fabCustomGallery.startAnimation(fab_close);
+                    binding.fabCamera.hide();
+                    binding.fabGallery.hide();
+                    binding.fabCustomGallery.hide();
+                } else {
+                    setListeners();
+                    setCustomGalleryListeners();
+                    binding.fabPlus.startAnimation(rotate_forward);
+                    binding.fabCamera.startAnimation(fab_open);
+                    binding.fabCustomGallery.startAnimation(fab_open);
+                    binding.fabCamera.show();
+                    binding.fabCustomGallery.show();
+                }
+            }else{
+                if (isFabOpen) {
+                    binding.fabPlus.startAnimation(rotate_backward);
+                    binding.fabCamera.startAnimation(fab_close);
+                    binding.fabGallery.startAnimation(fab_close);
+                    binding.fabCamera.hide();
+                    binding.fabGallery.hide();
+                    binding.fabCustomGallery.hide();
+                } else {
+                    setListeners();
+                    setGalleryListeners();
+                    binding.fabPlus.startAnimation(rotate_forward);
+                    binding.fabCamera.startAnimation(fab_open);
+                    binding.fabGallery.startAnimation(fab_open);
+                    binding.fabCamera.show();
+                    binding.fabGallery.show();
+                }
             }
             this.isFabOpen = !isFabOpen;
         }

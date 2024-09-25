@@ -831,4 +831,7 @@ Upload your first media by tapping on the add button.</string>
   <string name="pending">Pending</string>
   <string name="failed">Failed</string>
   <string name="could_not_load_place_data">Could not load place data</string>
+  <string name="use_custom_picker">Use our custom picker by default. Turn off to use system picker.</string>
+  <string name="use_custom_picker_explanation">Turns on our custom picker by default. Turn off for system picker.</string>
+  <string name="use_custom_picker_title">Use Custom Picker</string>
 </resources>
